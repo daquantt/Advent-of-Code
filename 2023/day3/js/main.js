@@ -1,25 +1,21 @@
-//split input on line and place into inputArray
-//for each line in inputArray, do:
-//get numbers and place in lineNumbers array
-//for each number get beginning and ending index of numbers from inputArray
-//check for symbol around number using +1 or -1 to inputArray index
-//push to engineNumbers if symbol exists
-
 const userInput = document.querySelector("#user-input");
-const result = document.querySelector("#result");
+const result1 = document.querySelector("#result1");
+const result2 = document.querySelector("#result2");
 const submitButton = document.querySelector("#submit-button");
 inputArray = [];
-engineNumbers = [];
+partNumbers = [];
 
 submitButton.addEventListener("click", () => {
-  //split input on line and place into array 1
+  //split input on line and place into inputArray
   inputArray = userInput.value.split(/\s/);
   console.log(inputArray);
 
+  //PART ONE
+  //for each line in inputArray, do:
   inputArray.forEach((item, index) => {
-    ////get numbers and place in lineNumbers array
-    lineNumbers = item.match(/\d+/g);
-    console.log(lineNumbers);
+    //get numbers and place in lineNumbers array
+    let lineNumbers = item.match(/\d+/g);
+    // console.log(lineNumbers);
 
     //if no number in line, clg a note
     if (lineNumbers === null) {
@@ -49,17 +45,63 @@ submitButton.addEventListener("click", () => {
         let bottomRight = inputArray[index + 1] === undefined || inputArray[index + 1][endIndex + 1] === undefined ? 0 : inputArray[index + 1][endIndex + 1];
         let endBottom = inputArray[index + 1] === undefined ? 0 : inputArray[index + 1][endIndex];
 
-        //check for symbols around number and push to new engineNumbers
+        //check for symbols around number and push to new partNumbers
         let regex = /[^A-Za-z0-9_.]/;
         if (regex.test(startTop) || regex.test(topLeft) || regex.test(left) || regex.test(bottomLeft) || regex.test(startBottom) || regex.test(endTop) || regex.test(topRight) || regex.test(right) || regex.test(bottomRight) || regex.test(endBottom) || regex.test(middleTop) || regex.test(middleBottom)) {
-          engineNumbers.push(Number(item));
+          partNumbers.push(Number(item));
         }
       });
     }
   });
 
-  console.log(engineNumbers);
-  let sum = engineNumbers.reduce((total, num) => total + num);
-  console.log(sum);
-  result.innerText = `Engine Number = ${sum}`;
+  // console.log(partNumbers);
+  let sumPartNumbers = partNumbers.reduce((total, num) => total + num);
+  // console.log(sumPartNumbers);
+  result1.innerText = `Engine Number = ${sumPartNumbers}`;
+
+  //PART TWO
+  //for each line
+  let indices = [];
+  inputArray.forEach((item, index) => {
+    //get * indexes and push to indices array
+    let regex = /\*/;
+    for (let i = 0; i < item.length; i++) {
+      if (regex.test(item[i])) {
+        indices.push({ line: index, position: i });
+      }
+    }
+  });
+  console.log(indices);
+
+  indices.forEach((item, index) => {
+    // console.log(item.length);
+    let topLeft = inputArray[item.line - 1] === undefined ? 0 : inputArray[item.line - 1].slice(0, item.position).match(/^\d+$/);
+    const top = () => {
+      if (inputArray[item.line - 1] === undefined) {
+        console.log("no top line");
+        return;
+      }
+      // if (inputArray[item.line - 1][item.position - 1] > 0 && inputArray[item.line - 1][item.position] > 0 && inputArray[item.line - 1][item.position + 1] > 0) {
+      //   return inputArray[item.line - 1].slice(item.position - 1, item.position + 2).match(/^\d+$/);
+      // }
+      // if (inputArray[item.line - 1][item.position - 1] > 0 && inputArray[item.line - 1][item.position] > 0) {
+      //   return inputArray[item.line - 1].slice(item.position - 1, item.position + 1).match(/^\d+$/);
+      // }
+      // if (inputArray[item.line - 1][item.position] > 0 && inputArray[item.line - 1][item.position + 1] > 0) {
+      //   return inputArray[item.line - 1].slice(item.position, item.position + 2).match(/^\d+$/);
+      // }
+      if (inputArray[item.line - 1][item.position] > 0) {
+        return inputArray[item.line - 1].slice(item.position - 2, inputArray[item.line - 1].length).match(/\d+/);
+      }
+    };
+    let topRight = inputArray[item.line - 1] === undefined ? 0 : inputArray[item.line - 1].slice(item.position + 1, item.position + 4).match(/^\d+$/);
+    console.log(topLeft, top(), topRight);
+  });
+  // let topRight = inputArray[index - 1] === undefined ? 0 : inputArray[index - 1].slice(indices[0].position + 1, indices[0].position + 4).match(/\d+/);
+
+  // let topLeft = inputArray[1] === undefined ? 0 : inputArray[1 - 1][2];
+
+  //check top, left, right and bottom for numbers
+  //if only 2 numbers around *, push product of numbers to new array
+  //sum new array
 });
